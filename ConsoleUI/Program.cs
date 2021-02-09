@@ -11,6 +11,24 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
+            //CrudTest();
+
+            ICarService carService = new CarManager(new EfCarDal());
+            carService.GetCarsDetails().ForEach((c) =>
+            {
+                Console.WriteLine($"Car id is {c.CarId}");
+                Console.WriteLine($"Car's name is {c.CarName}");
+                Console.WriteLine($"Car's brand name is {c.BrandName}");
+                Console.WriteLine($"Car's color is {c.ColorName}");
+                Console.WriteLine($"Car's daily price is {c.DailyPrice.ToString("#.##")}");
+                Console.WriteLine("--------------------------");
+            });
+
+            Console.ReadLine();
+        }
+
+        private static void CrudTest()
+        {
             ICarService carService = new CarManager(new EfCarDal());
             Car car1 = new Car { BrandId = 4, ColorId = 5, DailyPrice = 150, ModelYear = new DateTime(2016, 1, 1), Description = "5 Vites,Dizel" };
             Car car2 = new Car { BrandId = 1, ColorId = 4, DailyPrice = 250, ModelYear = new DateTime(2018, 1, 1), Description = "6 Vites,Benzin" };
@@ -33,10 +51,6 @@ namespace ConsoleUI
 
             carService.Update(car4update);
             Console.WriteLine($"Günlük kirası = {carService.GetById(4).DailyPrice} TL");
-
-
-
-            Console.ReadLine();
         }
     }
 }
