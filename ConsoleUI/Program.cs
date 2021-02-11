@@ -13,8 +13,54 @@ namespace ConsoleUI
         {
             //CrudTest();
 
+            //CarServiceTest();
+
+            IRentalService rentalService = new RentalManager(new EfRentalDal());
             ICarService carService = new CarManager(new EfCarDal());
-            carService.GetCarsDetails().ForEach((c) =>
+            IUserService userService = new UserManager(new EfUserDal());
+            ICustomerService customerService = new CustomerManager(new EfCustomerDal());
+            rentalService.GetRentals().Data.ForEach((r) =>
+            {
+                var car = carService.GetById(r.CarId).Data;
+                var customer = customerService.GetById(r.CustomerId).Data;
+                var user = userService.GetByUserId(customer.UserId).Data;
+                Console.WriteLine($"Id              {r.Id}");
+                Console.WriteLine($"CarId           {r.CarId}");
+                Console.WriteLine($"CustomerId      {r.CustomerId}");
+                Console.WriteLine($"Return Date     {r.ReturnDate.ToString()}");
+
+                Console.WriteLine("Car Details --------->");
+                
+                Console.WriteLine($"Car's name is           {car.Name}");
+                Console.WriteLine($"Car's Description is    {car.Description}");
+                Console.WriteLine($"Car's daily price is    {car.DailyPrice.ToString("#.##")}");
+
+                Console.WriteLine("Car Details --------->");
+
+                Console.WriteLine();
+
+                Console.WriteLine("Customer Details --------->");
+
+                Console.WriteLine($"Customer's first name is         {user.FirstName}");
+                Console.WriteLine($"Customer's last name is          {user.LastName}");
+                Console.WriteLine($"Customer's E-Mail address is     {user.EMail}");
+                Console.WriteLine($"Customer's company name is       {customer.CompanyName}");
+
+                Console.WriteLine("Customer Details --------->");
+                
+                Console.WriteLine();
+
+                Console.WriteLine("-------------------------------------------------------------------------------------");
+
+            });
+
+            Console.ReadLine();
+        }
+
+        private static void CarServiceTest()
+        {
+            ICarService carService = new CarManager(new EfCarDal());
+            carService.GetCarsDetails().Data.ForEach((c) =>
             {
                 Console.WriteLine($"Car id is {c.CarId}");
                 Console.WriteLine($"Car's name is {c.CarName}");
@@ -23,8 +69,6 @@ namespace ConsoleUI
                 Console.WriteLine($"Car's daily price is {c.DailyPrice.ToString("#.##")}");
                 Console.WriteLine("--------------------------");
             });
-
-            Console.ReadLine();
         }
 
         private static void CrudTest()
@@ -39,18 +83,18 @@ namespace ConsoleUI
             carService.Add(car3);
             carService.Add(car4);
 
-            carService.GetAll().ForEach((c) => { Console.WriteLine($"{c.Description}"); });
+            carService.GetAll().Data.ForEach((c) => { Console.WriteLine($"{c.Description}"); });
 
             carService.Delete(new Car { Id = 3 });
-            carService.GetAll().ForEach((c) => { Console.WriteLine($"{c.Description}"); });
+            carService.GetAll().Data.ForEach((c) => { Console.WriteLine($"{c.Description}"); });
 
-            Console.WriteLine($"{carService.GetById(1).ModelYear.Year}");
+            Console.WriteLine($"{carService.GetById(1).Data.ModelYear.Year}");
 
             Car car4update = new Car { Id = 4, BrandId = 2, ColorId = 7, DailyPrice = 450, ModelYear = new DateTime(2018, 1, 1), Description = "Camlıvan" };
-            Console.WriteLine($"Günlük kirası = {carService.GetById(4).DailyPrice} TL");
+            Console.WriteLine($"Günlük kirası = {carService.GetById(4).Data.DailyPrice} TL");
 
             carService.Update(car4update);
-            Console.WriteLine($"Günlük kirası = {carService.GetById(4).DailyPrice} TL");
+            Console.WriteLine($"Günlük kirası = {carService.GetById(4).Data.DailyPrice} TL");
         }
     }
 }
