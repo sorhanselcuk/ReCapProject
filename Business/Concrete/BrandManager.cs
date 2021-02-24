@@ -1,4 +1,6 @@
 ﻿using Business.Absract;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -18,10 +20,9 @@ namespace Business.Concrete
             _brandDal = brandDal;
         }
 
+        [ValidationAspect(typeof(BrandValidator))]
         public IResult Add(Brand brand)
         {
-            if (brand.Name.Length < 2)
-                return new ErrorResult("Brand name's length is must be greather than 2");
             _brandDal.Add(brand);
             return new SuccessResult("The Brand was successfully added");
         }
@@ -42,6 +43,7 @@ namespace Business.Concrete
             return new SuccessDataResult<Brand>(_brandDal.Get(b=>b.Id==id));
         }
 
+        [ValidationAspect(typeof(BrandValidator))]
         public IResult Update(Brand brand)
         {
             _brandDal.Update(brand);
