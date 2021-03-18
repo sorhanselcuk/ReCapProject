@@ -1,4 +1,5 @@
 ﻿using Business.Absract;
+using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
@@ -24,30 +25,36 @@ namespace Business.Concrete
         public IResult Add(Brand brand)
         {
             _brandDal.Add(brand);
-            return new SuccessResult("The Brand was successfully added");
+            return new SuccessResult(Messages.Success);
         }
 
         public IResult Delete(Brand brand)
         {
             _brandDal.Delete(brand);
-            return new SuccessResult("The brand was successfully deleted");
+            return new SuccessResult(Messages.Success);
         }
 
         public IDataResult<List<Brand>> GetAll()
         {
-            return new SuccessDataResult<List<Brand>>(_brandDal.GetAll());
+            var data = _brandDal.GetAll();
+            if (data is null)
+                return new ErrorDataResult<List<Brand>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<Brand>>(data,Messages.Success);
         }
 
         public IDataResult<Brand> GetById(int id)
         {
-            return new SuccessDataResult<Brand>(_brandDal.Get(b=>b.Id==id));
+            var data = _brandDal.Get(b => b.Id == id);
+            if (data is null)
+                return new ErrorDataResult<Brand>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<Brand>(data,Messages.Success);
         }
 
         [ValidationAspect(typeof(BrandValidator))]
         public IResult Update(Brand brand)
         {
             _brandDal.Update(brand);
-            return new SuccessResult("The brand was successfully updated");
+            return new SuccessResult(Messages.Success);
         }
     }
 }

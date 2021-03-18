@@ -1,4 +1,5 @@
 ﻿using Business.Absract;
+using Business.Constants;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,52 +22,67 @@ namespace Business.Concrete
         public IResult Add(User user)
         {
             _userDal.Add(user);
-            return new SuccessResult("The user was successfully added !");
+            return new SuccessResult(Messages.Success);
         }
 
         public IResult Delete(User user)
         {
             _userDal.Delete(user);
-            return new SuccessResult("The user was successfully deleted !");
+            return new SuccessResult(Messages.Success);
         }
 
         public IDataResult<List<User>> GetAll()
         {
-            return new SuccessDataResult<List<User>>(_userDal.GetAll());
+            var data = _userDal.GetAll();
+            if (data is null)
+                return new ErrorDataResult<List<User>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<User>>(data,Messages.Success);
         }
 
         public IDataResult<User> GetByEMail(string eMail)
         {
             var user = _userDal.Get(u => u.EMail == eMail);
             if (user == null)
-                return new ErrorDataResult<User>("There is not such the mail address ");
-            return new SuccessDataResult<User>(user);
+                return new ErrorDataResult<User>(Messages.ThereIsNoSuchEMail);
+            return new SuccessDataResult<User>(user,Messages.Success);
         }
 
         public IDataResult<List<User>> GetByFirstName(string firstName)
         {
-            return new DataResult<List<User>>(_userDal.GetAll(u => u.FirstName==firstName),true);
+            var data = _userDal.GetAll(u => u.FirstName == firstName);
+            if (data is null)
+                return new ErrorDataResult<List<User>>(Messages.ThereIsNoSuchData);
+            return new DataResult<List<User>>(data,true,Messages.Success);
         }
 
         public IDataResult<List<User>> GetByLastName(string lastName)
         {
-            return new SuccessDataResult<List<User>>(_userDal.GetAll(u => u.FirstName == lastName));
+            var data = _userDal.GetAll(u => u.LastName == lastName);
+            if (data is null)
+                return new ErrorDataResult<List<User>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<User>>(data,Messages.Success);
         }
 
         public IDataResult<List<User>> GetByName(string name)
         {
-            return new SuccessDataResult<List<User>>(_userDal.GetAll(u => u.FirstName +" "+ u.LastName == name));
+            var data = _userDal.GetAll(u => u.FirstName + " " + u.LastName == name);
+            if (data is null)
+                return new ErrorDataResult<List<User>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<User>>(data,Messages.Success);
         }
 
         public IDataResult<User> GetByUserId(int userId)
         {
-            return new SuccessDataResult<User>(_userDal.Get(u=>u.Id==userId));
+            var data = _userDal.Get(u => u.Id == userId);
+            if (data is null)
+                return new ErrorDataResult<User>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<User>(data,Messages.Success);
         }
 
         public IResult Update(User user)
         {
             _userDal.Update(user);
-            return new SuccessResult();
+            return new SuccessResult(Messages.Success);
         }
     }
 }

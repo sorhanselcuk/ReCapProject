@@ -1,4 +1,5 @@
 ﻿using Business.Absract;
+using Business.Constants;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -21,43 +22,55 @@ namespace Business.Concrete
         public IResult Delete(Rental rental)
         {
             _rentalDal.Delete(rental);
-            return new SuccessResult();
+            return new SuccessResult(Messages.Success);
         }
 
         public IDataResult<List<Rental>> GetByCustomerId(int customerId)
         {
-            return new SuccessDataResult<List<Rental>>(_rentalDal.GetAll(r=>r.CustomerId==customerId));
+            var data = _rentalDal.GetAll(r => r.CustomerId == customerId);
+            if (data is null)
+                return new ErrorDataResult<List<Rental>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<Rental>>(data,Messages.Success);
         }
 
         public IDataResult<List<Rental>> GetByDate(DateTime startDate, DateTime endDate)
         {
-            return new SuccessDataResult<List<Rental>>(_rentalDal.GetAll(r=>r.ReturnDate >= startDate && r.ReturnDate <= endDate));
+            var data = _rentalDal.GetAll(r => r.ReturnDate >= startDate && r.ReturnDate <= endDate);
+            if (data is null)
+                return new ErrorDataResult<List<Rental>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<Rental>>(data,Messages.Success);
         }
 
         public IDataResult<Rental> GetById(int rentalId)
         {
-            return new SuccessDataResult<Rental>(_rentalDal.Get(r=>r.Id==rentalId));
+            var data = _rentalDal.Get(r => r.Id == rentalId);
+            if (data is null)
+                return new ErrorDataResult<Rental>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<Rental>(Messages.Success);
 
         }
 
         public IDataResult<List<Rental>> GetRentals()
         {
-            return new SuccessDataResult<List<Rental>>(_rentalDal.GetAll());
+            var data = _rentalDal.GetAll();
+            if (data is null)
+                return new ErrorDataResult<List<Rental>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<Rental>>(Messages.Success);
         }
 
         public IResult RentCar(Rental rental)
         {
             var isAvailable = _rentalDal.Get(r => r.CarId == rental.CarId).ReturnDate == null ? true : false;
             if (!isAvailable)
-                return new ErrorResult("This car is not avaliable at the moment.");
+                return new ErrorResult(Messages.CarIsNotAvailable);
             _rentalDal.Add(rental);
-            return new SuccessResult();
+            return new SuccessResult(Messages.Success);
         }
 
         public IResult Update(Rental rental)
         {
             _rentalDal.Update(rental);
-            return new SuccessResult();
+            return new SuccessResult(Messages.Success);
         }
     }
 }

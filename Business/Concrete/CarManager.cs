@@ -1,4 +1,5 @@
 ﻿using Business.Absract;
+using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
 using Core.Utilities.Results.Abstract;
@@ -25,46 +26,60 @@ namespace Business.Concrete
         public IResult Add(Car car)
         {
             _carDal.Add(car);
-            return new Result(true,"The car was successfully added !");
+            return new Result(true,Messages.Success);
         }
 
         public IResult Delete(Car car)
         {
             _carDal.Delete(car);
-            return new SuccessResult("The car was successfully deleted !");
+            return new SuccessResult(Messages.Success);
         }
 
         public IDataResult<List<Car>> GetAll()
         {
-            return new SuccessDataResult<List<Car>>(_carDal.GetAll());
+            var data = _carDal.GetAll();
+            if (data is null)
+                return new ErrorDataResult<List<Car>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<Car>>(data,Messages.Success);
         }
 
         public IDataResult<Car> GetById(int id)
         {
-            return new DataResult<Car>(_carDal.Get(c=>c.Id==id),true);
+            var data = _carDal.Get(c => c.Id == id);
+            if (data is null)
+                return new ErrorDataResult<Car>(Messages.ThereIsNoSuchData);
+            return new DataResult<Car>(data,true,Messages.Success);
         }
 
         public IDataResult<List<Car>> GetCarsByBrandId(int id)
         {
-            var cars = _carDal.GetAll(c => c.BrandId == id);
-            return new SuccessDataResult<List<Car>>(cars,"The cars are the same brand.");
+            var data = _carDal.GetAll(c => c.BrandId == id);
+            if (data is null)
+                return new ErrorDataResult<List<Car>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<Car>>(data,Messages.Success);
         }
 
         public IDataResult<List<Car>> GetCarsByColorId(int id)
         {
-            return new SuccessDataResult<List<Car>>(_carDal.GetAll(c => c.ColorId == id));
+            var data = _carDal.GetAll(c => c.ColorId == id);
+            if (data is null)
+                return new ErrorDataResult<List<Car>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<Car>>(data,Messages.Success);
         }
 
         public IDataResult<List<CarDetailDto>> GetCarsDetails()
         {
-            return new SuccessDataResult<List<CarDetailDto>>(_carDal.GetCarsDetails());
+            var data = _carDal.GetCarsDetails();
+            if (data is null)
+                return new ErrorDataResult<List<CarDetailDto>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<CarDetailDto>>(data,Messages.Success);
         }
 
         [ValidationAspect(typeof(CarValidator))]
         public IResult Update(Car car)
         {
             _carDal.Update(car);
-            return new Result(true, "The car was successfully updated !");
+            return new Result(true, Messages.Success);
         }
     }
 }
