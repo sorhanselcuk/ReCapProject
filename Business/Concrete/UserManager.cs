@@ -1,5 +1,6 @@
 ﻿using Business.Absract;
 using Business.Constants;
+using Core.Entities.Concrete;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -13,10 +14,12 @@ namespace Business.Concrete
     public class UserManager : IUserService
     {
         private IUserDal _userDal;
+        private IAuthService _authService;
 
-        public UserManager(IUserDal userDal)
+        public UserManager(IUserDal userDal, IAuthService authService)
         {
             _userDal = userDal;
+            _authService = authService;
         }
 
         public IResult Add(User user)
@@ -41,7 +44,7 @@ namespace Business.Concrete
 
         public IDataResult<User> GetByEMail(string eMail)
         {
-            var user = _userDal.Get(u => u.EMail == eMail);
+            var user = _userDal.Get(u => u.Email == eMail);
             if (user == null)
                 return new ErrorDataResult<User>(Messages.ThereIsNoSuchEMail);
             return new SuccessDataResult<User>(user,Messages.Success);
@@ -77,6 +80,12 @@ namespace Business.Concrete
             if (data is null)
                 return new ErrorDataResult<User>(Messages.ThereIsNoSuchData);
             return new SuccessDataResult<User>(data,Messages.Success);
+        }
+
+        public List<OperationClaim> GetClaims(User user)
+        {
+            var data = _userDal.GetClaims(user);
+            return data;
         }
 
         public IResult Update(User user)

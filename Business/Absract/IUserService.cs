@@ -1,4 +1,5 @@
-﻿using Core.Utilities.Results.Abstract;
+﻿using Core.Entities.Concrete;
+using Core.Utilities.Results.Abstract;
 using Entities.Concrete;
 using System.Collections.Generic;
 using System.Text;
@@ -16,5 +17,6 @@ namespace Business.Absract
         IDataResult<List<User>> GetByFirstName(string firstName);
         IDataResult<List<User>> GetByLastName(string lastName);
         IDataResult<User> GetByEMail(string eMail);
+        List<OperationClaim> GetClaims(User user);
     }
 }

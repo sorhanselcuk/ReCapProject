@@ -4,6 +4,7 @@ using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,6 +24,14 @@ namespace Business.Concrete
         {
             _rentalDal.Delete(rental);
             return new SuccessResult(Messages.Success);
+        }
+
+        public IDataResult<List<RentalDetailDto>> GetAllRentalsDetails()
+        {
+            var data = _rentalDal.GetAllRentalDetails();
+            if (data.Count == 0)
+                return new ErrorDataResult<List<RentalDetailDto>>(Messages.ThereIsNoSuchData);
+            return new SuccessDataResult<List<RentalDetailDto>>(data,Messages.Success);
         }
 
         public IDataResult<List<Rental>> GetByCustomerId(int customerId)

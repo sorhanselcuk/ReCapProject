@@ -20,36 +20,6 @@ namespace WebAPI.Controllers
             _userService = userService;
         }
 
-        [HttpPost]
-        [Route("[action]")]
-        public IActionResult Add(User user)
-        {
-            var result = _userService.Add(user);
-            if (result.Success)
-                return Ok(result);
-            return BadRequest(result);
-        }
-
-        [HttpPost]
-        [Route("[action]")]
-        public IActionResult Update(User user)
-        {
-            var result = _userService.Update(user);
-            if (result.Success)
-                return Ok(result);
-            return BadRequest(result);
-        }
-
-        [HttpPost]
-        [Route("[action]")]
-        public IActionResult Delete(User user)
-        {
-            var result = _userService.Delete(user);
-            if (result.Success)
-                return Ok(result);
-            return BadRequest(result);
-        }
-
         [HttpGet]
         [Route("[action]")]
         public IActionResult GetAll()

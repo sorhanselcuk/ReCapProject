@@ -16,10 +16,12 @@ namespace Business.Concrete
     public class CarManager : ICarService
     {
         private ICarDal _carDal;
+        private ICarImageService _carImageService;
 
-        public CarManager(ICarDal carDal)
+        public CarManager(ICarDal carDal, ICarImageService carImageService)
         {
             _carDal = carDal;
+            _carImageService = carImageService;
         }
 
         [ValidationAspect(typeof(CarValidator))]
@@ -41,6 +43,30 @@ namespace Business.Concrete
             if (data is null)
                 return new ErrorDataResult<List<Car>>(Messages.ThereIsNoSuchData);
             return new SuccessDataResult<List<Car>>(data,Messages.Success);
+        }
+
+        public IDataResult<List<CarDetailDto>> GetAllWithDetails()
+        {
+            var data = _carDal.GetCarsDetails();
+            if (data is null)
+                return new ErrorDataResult<List<CarDetailDto>>(Messages.ThereIsNoSuchData);
+            foreach (var car in data)
+            {
+                car.CarImages = _carImageService.GetImagesByCarId(car.CarId).Data;
+            }
+            return new SuccessDataResult<List<CarDetailDto>>(data, Messages.Success);
+        }
+
+        public IDataResult<List<CarDetailDto>> GetAllWithDetailsByBrandId(int brandId)
+        {
+            var data = _carDal.GetCarsDetailsByBrandId(brandId);
+            if (data is null)
+                return new ErrorDataResult<List<CarDetailDto>>(Messages.ThereIsNoSuchData);
+            foreach (var car in data)
+            {
+                car.CarImages = _carImageService.GetImagesByCarId(car.CarId).Data;
+            }
+            return new SuccessDataResult<List<CarDetailDto>>(data, Messages.Success);
         }
 
         public IDataResult<Car> GetById(int id)
@@ -73,6 +99,29 @@ namespace Business.Concrete
             if (data is null)
                 return new ErrorDataResult<List<CarDetailDto>>(Messages.ThereIsNoSuchData);
             return new SuccessDataResult<List<CarDetailDto>>(data,Messages.Success);
+        }
+
+        public IDataResult<List<CarDetailDto>> GetCarsDetailsByColorId(int colorId)
+        {
+            var data = _carDal.GetCarsDetailsByColorId(colorId);
+            if (data is null)
+                return new ErrorDataResult<List<CarDetailDto>>(Messages.ThereIsNoSuchData);
+            foreach (var car in data)
+            {
+                car.CarImages = _carImageService.GetImagesByCarId(car.CarId).Data;
+            }
+            return new SuccessDataResult<List<CarDetailDto>>(data, Messages.Success);
+        }
+
+        public IDataResult<CarDetailDto> GetCarsDetailsById(int id)
+        {
+            var data = _carDal.GetCarsDetailsById(id);
+            if (data is null)
+                return new ErrorDataResult<CarDetailDto>(Messages.ThereIsNoSuchData);
+           
+                data.CarImages = _carImageService.GetImagesByCarId(data.CarId).Data;
+            
+            return new SuccessDataResult<CarDetailDto>(data, Messages.Success);
         }
 
         [ValidationAspect(typeof(CarValidator))]

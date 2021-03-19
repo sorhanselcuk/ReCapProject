@@ -90,11 +90,41 @@ namespace WebAPI.Controllers
         [Route("[action]")]
         public IActionResult GetCarsDetails()
         {
-            var result = _carService.GetCarsDetails();
+            var result = _carService.GetAllWithDetails();
             if (result.Success)
                 return Ok(result);
             return BadRequest(result);
         }
-
+        [HttpGet]
+        [Route("[action]")]
+        public IActionResult GetCarsDetailsByBrandId(int brandId)
+        {
+            var result = _carService.GetAllWithDetailsByBrandId(brandId);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+        [HttpGet]
+        [Route("[action]")]
+        public IActionResult GetCarsDetailsByColorId(int colorId)
+        {
+            var result = _carService.GetCarsDetailsByColorId(colorId);
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
+        [HttpGet]
+        [Route("[action]")]
+        public IActionResult GetCarsDetailsById(int id)
+        {
+            var result = _carService.GetCarsDetailsById(id);
+            result.Data.CarImages.Add(new CarImage
+            {
+                ImagePath = "https://www.sifiraracal.com/resim/galeri/624/20897/ford-focus-sedan.jpg"
+            });
+            if (result.Success)
+                return Ok(result);
+            return BadRequest(result);
+        }
     }
 }
