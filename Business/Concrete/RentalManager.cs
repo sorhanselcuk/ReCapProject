@@ -1,5 +1,6 @@
 ﻿using Business.Absract;
 using Business.Constants;
+using Core.Utilities.Business;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -37,7 +38,7 @@ namespace Business.Concrete
         public IDataResult<List<Rental>> GetByCustomerId(int customerId)
         {
             var data = _rentalDal.GetAll(r => r.CustomerId == customerId);
-            if (data is null)
+            if (data.Count == 0)
                 return new ErrorDataResult<List<Rental>>(Messages.ThereIsNoSuchData);
             return new SuccessDataResult<List<Rental>>(data,Messages.Success);
         }
@@ -45,7 +46,7 @@ namespace Business.Concrete
         public IDataResult<List<Rental>> GetByDate(DateTime startDate, DateTime endDate)
         {
             var data = _rentalDal.GetAll(r => r.ReturnDate >= startDate && r.ReturnDate <= endDate);
-            if (data is null)
+            if (data.Count == 0)
                 return new ErrorDataResult<List<Rental>>(Messages.ThereIsNoSuchData);
             return new SuccessDataResult<List<Rental>>(data,Messages.Success);
         }
@@ -62,16 +63,16 @@ namespace Business.Concrete
         public IDataResult<List<Rental>> GetRentals()
         {
             var data = _rentalDal.GetAll();
-            if (data is null)
+            if (data.Count == 0)
                 return new ErrorDataResult<List<Rental>>(Messages.ThereIsNoSuchData);
             return new SuccessDataResult<List<Rental>>(Messages.Success);
         }
 
         public IResult RentCar(Rental rental)
         {
-            var isAvailable = _rentalDal.Get(r => r.CarId == rental.CarId).ReturnDate == null ? true : false;
-            if (!isAvailable)
-                return new ErrorResult(Messages.CarIsNotAvailable);
+            var result = BusinessRules.Run(CheckIfIsCarAvailable(rental.CarId));
+            if (!result.Success)
+                return result;
             _rentalDal.Add(rental);
             return new SuccessResult(Messages.Success);
         }
@@ -80,6 +81,14 @@ namespace Business.Concrete
         {
             _rentalDal.Update(rental);
             return new SuccessResult(Messages.Success);
+        }
+
+        private IResult CheckIfIsCarAvailable(int carId)
+        {
+            var isAvailable = _rentalDal.Get(r => r.CarId == carId).ReturnDate == null ? true : false;
+            if (!isAvailable)
+                return new ErrorResult(Messages.CarIsNotAvailable);
+            return new SuccessResult();
         }
     }
 }

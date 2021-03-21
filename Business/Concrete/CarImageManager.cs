@@ -1,6 +1,10 @@
 ﻿using Business.Absract;
+using Business.BusinessAspects.Autofac.Security;
 using Business.Constants;
 using Business.Utilities;
+using Core.Aspects.Autofac.Performance;
+using Core.Aspects.Autofac.Transaction;
+using Core.Utilities.Business;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
 using DataAccess.Abstract;
@@ -22,8 +26,14 @@ namespace Business.Concrete
             _imageService = imageService;
         }
 
+        [SecuredOperation("Admin")]
+        [PerformanceAspect(1)]
+        [TransactionScopeAspect]
         public IResult Add(CarImage carImage, IFormFile formFile)
         {
+            var result = BusinessRules.Run(CheckIfCarImageLimitExceded(carImage.CarId));
+            if (!result.Success)
+                return new ErrorResult(result.Message);
             var imagePathResult = _imageService.Add(formFile);
             if (!imagePathResult.Success)
                 return new ErrorResult(imagePathResult.Message);
@@ -33,11 +43,14 @@ namespace Business.Concrete
             return new SuccessResult(Messages.Success);
         }
 
-        public IResult Delete(string path)
+        [SecuredOperation("Admin")]
+        [TransactionScopeAspect]
+        public IResult Delete(CarImage carImage)
         {
-            var result = _imageService.Delete(path);
+            var result = _imageService.Delete(carImage.ImagePath);
             if (!result.Success)
                 return new ErrorResult(result.Message);
+            _carImageDal.Delete(carImage);
             return new SuccessResult(Messages.Success);
         }
 
@@ -63,6 +76,8 @@ namespace Business.Concrete
             return new SuccessDataResult<CarImage>(data, Messages.Success);
         }
 
+        [SecuredOperation("Admin")]
+        [TransactionScopeAspect]
         public IResult Update(CarImage carImage, IFormFile formFile)
         {
             var result = _imageService.Update(carImage.ImagePath, formFile);
@@ -70,6 +85,13 @@ namespace Business.Concrete
                 return new ErrorResult(result.Message);
             _carImageDal.Update(carImage);
             return new SuccessResult(Messages.Success);
+        }
+        private IResult CheckIfCarImageLimitExceded(int carId)
+        {
+            var carImageCount = _carImageDal.GetAll(c => c.CarId == carId).Count;
+            if (carImageCount < 5)
+                return new SuccessResult();
+            return new ErrorResult("A car can only have 5 pictures !");
         }
     }
 }

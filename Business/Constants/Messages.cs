@@ -21,5 +21,6 @@ namespace Business.Constants
         public const string UserAlreadyExists = "This user has already exists !";
         public const string AccessTokenCreated = "The Access Token Successfully Created !";
         public const string AuthorizationDenied = "You are not Authorized";
+        public const string ColorAlreadyExists = "This color has already exists !";
     }
 }

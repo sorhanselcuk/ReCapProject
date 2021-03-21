@@ -1,5 +1,8 @@
 ﻿using Business.Absract;
+using Business.BusinessAspects.Autofac.Security;
 using Business.Constants;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
 using Core.Entities.Concrete;
 using Core.Utilities.Results.Abstract;
 using Core.Utilities.Results.Concrete;
@@ -22,6 +25,7 @@ namespace Business.Concrete
             _authService = authService;
         }
 
+        [ValidationAspect(typeof(UserValidator))]
         public IResult Add(User user)
         {
             _userDal.Add(user);
@@ -34,6 +38,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.Success);
         }
 
+        [SecuredOperation("Admin,Moderator")]
         public IDataResult<List<User>> GetAll()
         {
             var data = _userDal.GetAll();
@@ -42,6 +47,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<User>>(data,Messages.Success);
         }
 
+        [SecuredOperation("Admin,Moderator")]
         public IDataResult<User> GetByEMail(string eMail)
         {
             var user = _userDal.Get(u => u.Email == eMail);
@@ -50,6 +56,7 @@ namespace Business.Concrete
             return new SuccessDataResult<User>(user,Messages.Success);
         }
 
+        [SecuredOperation("Admin,Moderator")]
         public IDataResult<List<User>> GetByFirstName(string firstName)
         {
             var data = _userDal.GetAll(u => u.FirstName == firstName);
@@ -58,6 +65,7 @@ namespace Business.Concrete
             return new DataResult<List<User>>(data,true,Messages.Success);
         }
 
+        [SecuredOperation("Admin,Moderator")]
         public IDataResult<List<User>> GetByLastName(string lastName)
         {
             var data = _userDal.GetAll(u => u.LastName == lastName);
@@ -66,6 +74,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<User>>(data,Messages.Success);
         }
 
+        [SecuredOperation("Admin,Moderator")]
         public IDataResult<List<User>> GetByName(string name)
         {
             var data = _userDal.GetAll(u => u.FirstName + " " + u.LastName == name);
@@ -74,6 +83,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<User>>(data,Messages.Success);
         }
 
+        [SecuredOperation("Admin,Moderator")]
         public IDataResult<User> GetByUserId(int userId)
         {
             var data = _userDal.Get(u => u.Id == userId);
@@ -88,6 +98,7 @@ namespace Business.Concrete
             return data;
         }
 
+        [ValidationAspect(typeof(UserValidator))]
         public IResult Update(User user)
         {
             _userDal.Update(user);

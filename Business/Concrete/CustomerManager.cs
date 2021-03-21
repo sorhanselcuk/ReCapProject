@@ -34,7 +34,7 @@ namespace Business.Concrete
         public IDataResult<List<Customer>> GetAll()
         {
             var data = _customerDal.GetAll();
-            if (data is null)
+            if (data.Count == 0)
                 return new ErrorDataResult<List<Customer>>(Messages.ThereIsNoSuchData);
             return new SuccessDataResult<List<Customer>>(data,Messages.Success);
 
