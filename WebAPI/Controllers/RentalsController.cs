@@ -99,5 +99,15 @@ namespace WebAPI.Controllers
                 return Ok(result);
             return BadRequest(result);
         }
+
+        [HttpGet]
+        [Route("[action]")]
+        public IActionResult GetCarStatus(int carId)
+        {
+            var data = _rentalService.GetCarStatus(carId);
+            if (data.Success)
+                return Ok(data);
+            return BadRequest(data);
+        }
     }
 }

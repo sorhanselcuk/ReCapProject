@@ -28,7 +28,7 @@ namespace Business.Concrete
         public IResult Add(Color color)
         {
             var result = BusinessRules.Run(CheckIfColorNameExist(color.Name));
-            if (!result.Success)
+            if (result!=null)
                 return result;
             _colorDal.Add(color);
             return new SuccessResult(Messages.Success);
@@ -55,7 +55,7 @@ namespace Business.Concrete
         public IResult Update(Color color)
         {
             var result = BusinessRules.Run(CheckIfColorNameExist(color.Name));
-            if (!result.Success)
+            if (result!=null)
                 return result;
             _colorDal.Update(color);
             return new SuccessResult(Messages.Success);

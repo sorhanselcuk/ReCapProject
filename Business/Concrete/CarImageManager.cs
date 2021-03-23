@@ -32,7 +32,7 @@ namespace Business.Concrete
         public IResult Add(CarImage carImage, IFormFile formFile)
         {
             var result = BusinessRules.Run(CheckIfCarImageLimitExceded(carImage.CarId));
-            if (!result.Success)
+            if (result != null)
                 return new ErrorResult(result.Message);
             var imagePathResult = _imageService.Add(formFile);
             if (!imagePathResult.Success)

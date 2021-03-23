@@ -60,6 +60,14 @@ namespace Business.Concrete
 
         }
 
+        public IDataResult<bool> GetCarStatus(int carId)
+        {
+            var data = _rentalDal.GetAll(r => r.CarId == carId && r.ReturnDate > DateTime.Now);
+            if (data.Count > 0)
+                return new ErrorDataResult<bool>(Messages.CarIsNotAvailable);
+            return new SuccessDataResult<bool>(true,Messages.Success);
+        }
+
         public IDataResult<List<Rental>> GetRentals()
         {
             var data = _rentalDal.GetAll();
@@ -71,7 +79,7 @@ namespace Business.Concrete
         public IResult RentCar(Rental rental)
         {
             var result = BusinessRules.Run(CheckIfIsCarAvailable(rental.CarId));
-            if (!result.Success)
+            if (result != null)
                 return result;
             _rentalDal.Add(rental);
             return new SuccessResult(Messages.Success);
@@ -85,8 +93,8 @@ namespace Business.Concrete
 
         private IResult CheckIfIsCarAvailable(int carId)
         {
-            var isAvailable = _rentalDal.Get(r => r.CarId == carId).ReturnDate == null ? true : false;
-            if (!isAvailable)
+            var data = _rentalDal.GetAll(r => r.CarId == carId && r.ReturnDate > DateTime.Now);
+            if (data.Count > 0)
                 return new ErrorResult(Messages.CarIsNotAvailable);
             return new SuccessResult();
         }

@@ -51,7 +51,7 @@ namespace WebAPI.Controllers
             var carImageResult = _carImageService.GetImagesByImageId(carImageId);
             if (!carImageResult.Success)
                 return BadRequest(carImageResult.Message);
-            var deleteResult = _carImageService.Delete(carImageResult.Data.ImagePath);
+            var deleteResult = _carImageService.Delete(carImageResult.Data);
             if (!deleteResult.Success)
                 return BadRequest(deleteResult.Message);
             return Ok(deleteResult);

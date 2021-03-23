@@ -17,12 +17,10 @@ namespace Business.Concrete
     public class UserManager : IUserService
     {
         private IUserDal _userDal;
-        private IAuthService _authService;
-
-        public UserManager(IUserDal userDal, IAuthService authService)
+       
+        public UserManager(IUserDal userDal)
         {
             _userDal = userDal;
-            _authService = authService;
         }
 
         [ValidationAspect(typeof(UserValidator))]
@@ -47,7 +45,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<User>>(data,Messages.Success);
         }
 
-        [SecuredOperation("Admin,Moderator")]
+        
         public IDataResult<User> GetByEMail(string eMail)
         {
             var user = _userDal.Get(u => u.Email == eMail);

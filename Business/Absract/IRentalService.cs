@@ -16,5 +16,6 @@ namespace Business.Absract
         IDataResult<List<Rental>> GetByDate(DateTime startDate,DateTime endDate);
         IDataResult<List<Rental>> GetRentals();
         IDataResult<List<RentalDetailDto>> GetAllRentalsDetails();
+        IDataResult<bool> GetCarStatus(int carId);
     }
 }

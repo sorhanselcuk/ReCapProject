@@ -48,6 +48,7 @@ namespace Business.DependencyResolves.Autofac
             builder.RegisterType<CarImageManager>().As<ICarImageService>().SingleInstance();
             builder.RegisterType<LocalImageManager>().As<IImageService>().SingleInstance();
             builder.RegisterType<ColorManager>().As<IColorService>().SingleInstance();
+            builder.RegisterType<AuthManager>().As<IAuthService>().SingleInstance();
         }
     }
 }
